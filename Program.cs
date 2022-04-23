@@ -60,6 +60,7 @@ namespace c4_model_design
             Container pagoContext =             librarySystem.AddContainer("Pagos Context", "Bounded Context del Microservicio de pagos de suscripciones", "NodeJS (NestJS)");
             Container registroContext =         librarySystem.AddContainer("Registro Context", "Bounded Context del Microservicio de registro de segmentos objetivos", "NodeJS (NestJS)");
             Container historiasContext =        librarySystem.AddContainer("Post Context", "Bounded Context del Microservicio de contenido de las historias", "NodeJS (NestJS)");
+            Container userContext =             librarySystem.AddContainer("User Context", "Bounded Context del Microservicio para users", "NodeJS (NestJS)");
             Container calificacionesContext =   librarySystem.AddContainer("Calificaciones Context", "Bounded Context del microservicio de información de las calificaciones", "NodeJS (NestJS)");
             Container apiGateway =              librarySystem.AddContainer("API Gateway", "API Gateway", "Spring Boot port 8080");
             Container database1 =               librarySystem.AddContainer("Pagos DB", "", "MySQL");
@@ -67,6 +68,7 @@ namespace c4_model_design
             Container database3 =               librarySystem.AddContainer("Post DB", "", "MySQL");
             Container database4 =               librarySystem.AddContainer("Calificaciones DB", "", "MySQL");
             Container database5 =               librarySystem.AddContainer("Post DB Replica", "", "MySQL");
+            Container database6 =               librarySystem.AddContainer("User DB", "", "MySQL");
             Container messageBus = librarySystem.AddContainer("Bus de Mensajes en Cluster de Alta Disponibilidad", "Transporte de eventos del dominio.", "RabbitMQ");
 
             
@@ -88,6 +90,7 @@ namespace c4_model_design
             apiGateway.Uses(calificacionesContext,         "Request", "JSON/HTTPS");
             apiGateway.Uses(registroContext,       "Request", "JSON/HTTPS");
             apiGateway.Uses(historiasContext,   "Request", "JSON/HTTPS");
+            apiGateway.Uses(userContext,   "Request", "JSON/HTTPS");
 
             pagoContext.Uses(database1, "", "JDBC");
             registroContext.Uses(database2, "", "JDBC");
@@ -95,11 +98,13 @@ namespace c4_model_design
             historiasContext.Uses(database5, "", "JDBC");
             database3.Uses(database5, "", "JDBC");
             calificacionesContext.Uses(database4, "", "JDBC");
+            userContext.Uses(database6, "", "JDBC");
             
             pagoContext.Uses(messageBus,"Publica y consume eventos del dominio");
             registroContext.Uses(messageBus, "Publica y consume eventos del dominio");
             historiasContext.Uses(messageBus, "Publica y consume eventos del dominio");
             calificacionesContext.Uses(messageBus, "Publica y consume eventos del dominio");
+            userContext.Uses(messageBus, "Publica y consume eventos del dominio");
                         
             // Tags
             mobileApplication.AddTags("MobileApp");
@@ -111,10 +116,12 @@ namespace c4_model_design
             database3.AddTags("Database");
             database4.AddTags("Database");
             database5.AddTags("Database");
+            database6.AddTags("Database");
             pagoContext.AddTags("BoundedContext");            
             registroContext.AddTags("BoundedContext");            
             historiasContext.AddTags("BoundedContext");            
             calificacionesContext.AddTags("BoundedContext");
+            userContext.AddTags("BoundedContext");
             messageBus.AddTags("MessageBus");
 
 
@@ -132,54 +139,22 @@ namespace c4_model_design
             containerView.AddAllElements(); 
             
             //3. Diagrama de Componentes -> Traveler
-            // Component domainLayerPost =         historiasContext.AddComponent("Domain Layer", "", "NodeJS (NestJS)");
-            // Component historiasController =          historiasContext.AddComponent("historias Controller", "REST Api endpoints de historiass", "NodeJS (NestJS)");
-            // Component historiasApplicationService =  historiasContext.AddComponent("historias Application Service", "Provee metodos para los datos de historias", "NodeJS (NestJS)");
-            // Component historiasRepository =          historiasContext.AddComponent("historias Repository", "Informacion de historias", "NodeJS (NestJS)");
-            // Component friendsRepository =           historiasContext.AddComponent("Friends Repository", "Informacion de los friends del historias", "NodeJS (NestJS)");
-
-            // mobileApplication.Uses(historiasController,"JSON");
-            // webApplication.Uses(historiasController,"JSON");
-            // historiasController.Uses(historiasApplicationService,"Usa");
-            // historiasApplicationService.Uses(friendsRepository,"Usa");
-            // historiasApplicationService.Uses(historiasRepository,"Usa");
-            // historiasApplicationService.Uses(domainLayerPost,"Usa");
-            // friendsRepository.Uses(database5,"","JDBC");
-            // historiasRepository.Uses(database5,"","JDBC");
-            // friendsRepository.Uses(database3,"","JDBC");
-            // historiasRepository.Uses(database3,"","JDBC");
-            // database3.Uses(database5, "", "JDBC");
-
-            
-            // //tags
-            // domainLayerPost.AddTags("Component");
-            // historiasRepository.AddTags("Component");
-            // historiasController.AddTags("Component");
-            // historiasApplicationService.AddTags("Component");
-            // friendsRepository.AddTags("Component");
-
-            // //style
-            // styles.Add(new ElementStyle("DomainLayer") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-
-            // ComponentView componentView = viewSet.CreateComponentView(historiasContext, "Components", "Component Diagram");
-            // componentView.PaperSize = PaperSize.A4_Landscape;
-            // componentView.Add(mobileApplication);
-            // componentView.Add(webApplication);
-            // componentView.Add(apiGateway);         
-
             Component domainLayerHistoriasContext = historiasContext.AddComponent("Domain Layer", "Domino del contexto", "Spring Boot(NestJS)");
             Component historiaController = historiasContext.AddComponent("History Controller", "REST API endpoint de historias", "Spring Boot");
             Component historiaApplicationService = historiasContext.AddComponent("HistorysAplication Service", "Prove metodos para los datos de hisotrias", "Spring Boot");
             Component historiaRepository=historiasContext.AddComponent("History Repository", "Información de historias", "Spring Boot");
             Component usuarioRepository=historiasContext.AddComponent("Usuario Repository", "Información de usuarios", "Spring Boot");
 
-            mobileApplication.Uses(historiaController, "JSON");
-            webApplication.Uses(historiaController, "JSON");
+            mobileApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
+            webApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
+            apiGateway.Uses(historiaController, "JSON");
             historiaController.Uses(historiaApplicationService, "");
             historiaApplicationService.Uses(historiaRepository, "");
             historiaApplicationService.Uses(usuarioRepository, "");
-            historiaRepository.Uses(database1, "", "JDBC");
-            usuarioRepository.Uses(database2, "", "JDBC");
+            historiaApplicationService.Uses(domainLayerHistoriasContext, "");
+            historiaRepository.Uses(database5, "", "JDBC");
+            historiaRepository.Uses(database3, "", "JDBC");
+            database3.Uses(database5, "", "JDBC");            
 
             domainLayerHistoriasContext.AddTags("Component");
             historiaController.AddTags("Component");
@@ -193,8 +168,10 @@ namespace c4_model_design
             ComponentView historyComponentView = viewSet.CreateComponentView(historiasContext, "History Components", "Component Diagram");
             historyComponentView.PaperSize = PaperSize.A4_Landscape;
             historyComponentView.Add(mobileApplication);   
+            historyComponentView.Add(apiGateway);   
             historyComponentView.Add(webApplication);
-            historyComponentView.Add(database1);
+            historyComponentView.Add(database5);
+            historyComponentView.Add(database3);
             historyComponentView.AddAllComponents();            
 
             structurizrClient.UnlockWorkspace(workspaceId);
