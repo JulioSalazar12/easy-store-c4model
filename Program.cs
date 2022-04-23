@@ -58,15 +58,11 @@ namespace c4_model_design
             Container webApplication =          librarySystem.AddContainer("Web App", "Permite a los usuarios visualizar las actividades turisticas que pueden realizar cercanas a su destino.", "Vue");
             Container landingPage =             librarySystem.AddContainer("Landing Page", "", "Bootstrap");
             Container pagoContext =             librarySystem.AddContainer("Pagos Context", "Bounded Context del Microservicio de pagos de suscripciones", "NodeJS (NestJS)");
-            Container registroContext =         librarySystem.AddContainer("Registro Context", "Bounded Context del Microservicio de registro de segmentos objetivos", "NodeJS (NestJS)");
             Container historiasContext =        librarySystem.AddContainer("Post Context", "Bounded Context del Microservicio de contenido de las historias", "NodeJS (NestJS)");
             Container userContext =             librarySystem.AddContainer("User Context", "Bounded Context del Microservicio para users", "NodeJS (NestJS)");
-            Container calificacionesContext =   librarySystem.AddContainer("Calificaciones Context", "Bounded Context del microservicio de información de las calificaciones", "NodeJS (NestJS)");
             Container apiGateway =              librarySystem.AddContainer("API Gateway", "API Gateway", "Spring Boot port 8080");
             Container database1 =               librarySystem.AddContainer("Pagos DB", "", "MySQL");
-            Container database2 =               librarySystem.AddContainer("Registro DB", "", "MySQL");
             Container database3 =               librarySystem.AddContainer("Post DB", "", "MySQL");
-            Container database4 =               librarySystem.AddContainer("Calificaciones DB", "", "MySQL");
             Container database5 =               librarySystem.AddContainer("Post DB Replica", "", "MySQL");
             Container database6 =               librarySystem.AddContainer("User DB", "", "MySQL");
             Container messageBus = librarySystem.AddContainer("Bus de Mensajes en Cluster de Alta Disponibilidad", "Transporte de eventos del dominio.", "RabbitMQ");
@@ -87,23 +83,17 @@ namespace c4_model_design
             webApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
 
             apiGateway.Uses(pagoContext,         "Request", "JSON/HTTPS");
-            apiGateway.Uses(calificacionesContext,         "Request", "JSON/HTTPS");
-            apiGateway.Uses(registroContext,       "Request", "JSON/HTTPS");
             apiGateway.Uses(historiasContext,   "Request", "JSON/HTTPS");
             apiGateway.Uses(userContext,   "Request", "JSON/HTTPS");
 
             pagoContext.Uses(database1, "", "JDBC");
-            registroContext.Uses(database2, "", "JDBC");
             historiasContext.Uses(database3, "", "JDBC");
             historiasContext.Uses(database5, "", "JDBC");
             database3.Uses(database5, "", "JDBC");
-            calificacionesContext.Uses(database4, "", "JDBC");
             userContext.Uses(database6, "", "JDBC");
             
             pagoContext.Uses(messageBus,"Publica y consume eventos del dominio");
-            registroContext.Uses(messageBus, "Publica y consume eventos del dominio");
             historiasContext.Uses(messageBus, "Publica y consume eventos del dominio");
-            calificacionesContext.Uses(messageBus, "Publica y consume eventos del dominio");
             userContext.Uses(messageBus, "Publica y consume eventos del dominio");
                         
             // Tags
@@ -112,15 +102,11 @@ namespace c4_model_design
             landingPage.AddTags("LandingPage");            
             apiGateway.AddTags("APIGateway");
             database1.AddTags("Database");
-            database2.AddTags("Database");
             database3.AddTags("Database");
-            database4.AddTags("Database");
             database5.AddTags("Database");
             database6.AddTags("Database");
             pagoContext.AddTags("BoundedContext");            
-            registroContext.AddTags("BoundedContext");            
             historiasContext.AddTags("BoundedContext");            
-            calificacionesContext.AddTags("BoundedContext");
             userContext.AddTags("BoundedContext");
             messageBus.AddTags("MessageBus");
 
