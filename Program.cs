@@ -26,12 +26,10 @@ namespace c4_model_design
                         
             Person escritor = model.AddPerson("Escritor", "Usuario capaz de publicar contenido textual.");
             Person lector = model.AddPerson("Lector", "Usuario que solo podra leer contenido y suscribirse");
-            Person developer = model.AddPerson("Developer", "Developer - Open Data.");
 
             
             lector.Uses(librarySystem, "Realiza consultas para mantenerse al tanto de las publicaciones que puede leer");
             escritor.Uses(librarySystem, "Realiza consultas para mantenerse al tanto de los lectors que seleccionan su negocio");
-            developer.Uses(librarySystem, "Realiza consultas a la REST API para mantenerse al tanto de los datos de las historias");
 
             
             SystemContextView contextView = viewSet.CreateSystemContextView(librarySystem, "Contexto", "Diagrama de contexto");
@@ -43,13 +41,11 @@ namespace c4_model_design
             escritor.AddTags("Ciudadano");
             lector.AddTags("Ciudadano");
             librarySystem.AddTags("SistemaLibros");
-            developer.AddTags("Developer");
 
 
             Styles styles = viewSet.Configuration.Styles;
             styles.Add(new ElementStyle("Ciudadano") { Background = "#0a60ff", Color = "#ffffff", Shape = Shape.Person });
             styles.Add(new ElementStyle("SistemaLibros") { Background = "#008f39", Color = "#ffffff", Shape = Shape.RoundedBox });
-            styles.Add(new ElementStyle("Developer") { Background = "#facc2e", Shape = Shape.Robot });
 
             
 
@@ -76,7 +72,6 @@ namespace c4_model_design
             escritor.Uses(mobileApplication, "Consulta");
             escritor.Uses(webApplication, "Consulta");
             escritor.Uses(landingPage, "Consulta");
-            developer.Uses(apiGateway, "API Request", "JSON/HTTPS");
                      
 
             mobileApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
@@ -124,7 +119,7 @@ namespace c4_model_design
             contextView.PaperSize = PaperSize.A4_Landscape;
             containerView.AddAllElements(); 
             
-            //3. Diagrama de Componentes -> Traveler
+            //3. Diagrama de Componentes -> post
             Component domainLayerHistoriasContext = historiasContext.AddComponent("Domain Layer", "Domino del contexto", "Spring Boot(NestJS)");
             Component historiaController = historiasContext.AddComponent("History Controller", "REST API endpoint de historias", "Spring Boot");
             Component historiaApplicationService = historiasContext.AddComponent("HistorysAplication Service", "Prove metodos para los datos de hisotrias", "Spring Boot");
@@ -158,7 +153,63 @@ namespace c4_model_design
             historyComponentView.Add(webApplication);
             historyComponentView.Add(database5);
             historyComponentView.Add(database3);
-            historyComponentView.AddAllComponents();            
+            historyComponentView.AddAllComponents();
+
+            //3. Diagrama de Componentes -> user
+            Component userController = userContext.AddComponent("User Controller", "REST API endpoint de user", "Spring Boot");
+            Component userApplicationService = userContext.AddComponent("Users Aplication Service", "Prove metodos para los datos de user", "Spring Boot");
+            Component userRepository=userContext.AddComponent("User Repository", "Información de user", "Spring Boot");
+            Component userDomainLayer=userContext.AddComponent("Domain Layer", "Dominio del contexto", "Spring Boot");
+
+            mobileApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
+            webApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
+            apiGateway.Uses(userController, "JSON");
+            userController.Uses(userApplicationService, "");
+            userApplicationService.Uses(userRepository, "");
+            userApplicationService.Uses(userDomainLayer, "");
+            userRepository.Uses(database6, "", "JDBC");
+
+            userController.AddTags("Component");
+            userApplicationService.AddTags("Component");
+            userRepository.AddTags("Component");
+            userDomainLayer.AddTags("Component");
+           
+
+            ComponentView userComponentView = viewSet.CreateComponentView(userContext, "User Components", "Component Diagram");
+            userComponentView.PaperSize = PaperSize.A4_Landscape;
+            userComponentView.Add(mobileApplication);   
+            userComponentView.Add(apiGateway);   
+            userComponentView.Add(webApplication);
+            userComponentView.Add(database6);
+            userComponentView.AddAllComponents();    
+
+            //3. Diagrama de Componentes -> pago
+            Component pagoController = pagoContext.AddComponent("Pago Controller", "REST API endpoint de Pago", "Spring Boot");
+            Component pagoApplicationService = pagoContext.AddComponent("Pago Aplication Service", "Prove metodos para los datos de Pagos", "Spring Boot");
+            Component pagoRepository=pagoContext.AddComponent("Pago Repository", "Información de Pago", "Spring Boot");
+            Component pagoDomainLayer=pagoContext.AddComponent("Pago Domain Layer", "Dominio del contexto", "Spring Boot");
+
+            mobileApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
+            webApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
+            apiGateway.Uses(pagoController, "JSON");
+            pagoController.Uses(pagoApplicationService, "");
+            pagoApplicationService.Uses(pagoRepository, "");
+            pagoApplicationService.Uses(pagoDomainLayer, "");
+            pagoRepository.Uses(database1, "", "JDBC");
+
+            pagoController.AddTags("Component");
+            pagoApplicationService.AddTags("Component");
+            pagoRepository.AddTags("Component");
+            pagoDomainLayer.AddTags("Component");
+           
+
+            ComponentView pagoComponentView = viewSet.CreateComponentView(pagoContext, "Pago Components", "Component Diagram");
+            pagoComponentView.PaperSize = PaperSize.A4_Landscape;
+            pagoComponentView.Add(mobileApplication);   
+            pagoComponentView.Add(apiGateway);   
+            pagoComponentView.Add(webApplication);
+            pagoComponentView.Add(database1);
+            pagoComponentView.AddAllComponents();          
 
             structurizrClient.UnlockWorkspace(workspaceId);
             structurizrClient.PutWorkspace(workspaceId, workspace);
