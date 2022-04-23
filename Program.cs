@@ -22,15 +22,15 @@ namespace c4_model_design
             Model model = workspace.Model;
 
             // 1. Diagrama de Contexto
-            SoftwareSystem libraySystem = model.AddSoftwareSystem("Sistema sample-content", "sample message");
+            SoftwareSystem librarySystem = model.AddSoftwareSystem("Sistema sample-content", "sample message");
                         
             Person escritor = model.AddPerson("Escritor", "Usuario capaz de publicar contenido textual.");
             Person lector = model.AddPerson("Lector", "Usuario que solo podra leer contenido y suscribirse");
             
-            lector.Uses(libraySystem, "Realiza consultas para mantenerse al tanto de las publicaciones que puede leer");
-            escritor.Uses(libraySystem, "Realiza consultas para mantenerse al tanto de los lectors que seleccionan su negocio");
+            lector.Uses(librarySystem, "Realiza consultas para mantenerse al tanto de las publicaciones que puede leer");
+            escritor.Uses(librarySystem, "Realiza consultas para mantenerse al tanto de los lectors que seleccionan su negocio");
             
-            SystemContextView contextView = viewSet.CreateSystemContextView(libraySystem, "Contexto", "Diagrama de contexto");
+            SystemContextView contextView = viewSet.CreateSystemContextView(librarySystem, "Contexto", "Diagrama de contexto");
             contextView.PaperSize = PaperSize.A3_Landscape;
             contextView.AddAllSoftwareSystems();
             contextView.AddAllPeople();
@@ -38,7 +38,7 @@ namespace c4_model_design
             // Tags
             escritor.AddTags("Ciudadano");
             lector.AddTags("Ciudadano");
-            libraySystem.AddTags("SistemaLibros");
+            librarySystem.AddTags("SistemaLibros");
 
             Styles styles = viewSet.Configuration.Styles;
             styles.Add(new ElementStyle("Ciudadano") { Background = "#0a60ff", Color = "#ffffff", Shape = Shape.Person });
@@ -46,52 +46,59 @@ namespace c4_model_design
             
 
             // 2. Diagrama de Contenedores
-            Container mobileApplication =       libraySystem.AddContainer("Mobile App", "Permite a los usuarios visualizar las actividades turisticas que pueden realizar cercanas a su destino.", "Flutter");
-            Container webApplication =          libraySystem.AddContainer("Web App", "Permite a los usuarios visualizar las actividades turisticas que pueden realizar cercanas a su destino.", "Vue");
-            Container landingPage =             libraySystem.AddContainer("Landing Page", "", "Bootstrap");
-            Container tripPlanContext =         libraySystem.AddContainer("Trip Plan Context", "Bounded Context del Microservicio de Planificación de viajes y hospedajes en el destino seleccionado", "NodeJS (NestJS)");
-            Container promotionsContext =       libraySystem.AddContainer("Promotions Context", "Bounded Context del Microservicio de promociones existentes", "NodeJS (NestJS)");
-            Container partnerContext =          libraySystem.AddContainer("Partner Context", "Bounded Context del Microservicio de información de los partners", "NodeJS (NestJS)");
-            Container travelerContext =         libraySystem.AddContainer("Traveler Context", "Bounded Context del microservicio de información del traveler", "NodeJS (NestJS)");
-            Container authenticationContext =   libraySystem.AddContainer("Authentication Context", "Bounded Context del microservicio de autenticación para traveler y partner", "NodeJS (NestJS)");
-            Container database =                libraySystem.AddContainer("Database", "", "MySQL");
+            Container mobileApplication =       librarySystem.AddContainer("Mobile App", "Permite a los usuarios visualizar las actividades turisticas que pueden realizar cercanas a su destino.", "Flutter");
+            Container webApplication =          librarySystem.AddContainer("Web App", "Permite a los usuarios visualizar las actividades turisticas que pueden realizar cercanas a su destino.", "Vue");
+            Container landingPage =             librarySystem.AddContainer("Landing Page", "", "Bootstrap");
+            Container pagoContext =             librarySystem.AddContainer("Trip Plan Context", "Bounded Context del Microservicio de Planificación de viajes y hospedajes en el destino seleccionado", "NodeJS (NestJS)");
+            Container registroContext =         librarySystem.AddContainer("registro Context", "Bounded Context del Microservicio de promociones existentes", "NodeJS (NestJS)");
+            Container notificacionesContext =   librarySystem.AddContainer("notificaciones Context", "Bounded Context del Microservicio de información de los notificacioness", "NodeJS (NestJS)");
+            Container calificacionesContext =   librarySystem.AddContainer("calificaciones Context", "Bounded Context del microservicio de información del calificaciones", "NodeJS (NestJS)");
+            Container chatContext =             librarySystem.AddContainer("chat Context", "Bounded Context del microservicio de autenticación para calificaciones y notificaciones", "NodeJS (NestJS)");
+            Container database1 =                librarySystem.AddContainer("Database1", "", "MySQL");
+            Container database2 =                librarySystem.AddContainer("Database2", "", "MySQL");
+            Container database3 =                librarySystem.AddContainer("Database3", "", "MySQL");
+            Container database4 =                librarySystem.AddContainer("Database4", "", "MySQL");
+            Container database5 =                librarySystem.AddContainer("Database5", "", "MySQL");
             
-            empresario.Uses(mobileApplication, "Consulta");
-            empresario.Uses(webApplication, "Consulta");
-            empresario.Uses(landingPage, "Consulta");
-            viajero.Uses(mobileApplication, "Consulta");
-            viajero.Uses(webApplication, "Consulta");
-            viajero.Uses(landingPage, "Consulta");                        
+            lector.Uses(mobileApplication, "Consulta");
+            lector.Uses(webApplication, "Consulta");
+            lector.Uses(landingPage, "Consulta");
+            escritor.Uses(mobileApplication, "Consulta");
+            escritor.Uses(webApplication, "Consulta");
+            escritor.Uses(landingPage, "Consulta");                        
 
-            mobileApplication.Uses(tripPlanContext,         "Request", "JSON/HTTPS");
-            mobileApplication.Uses(travelerContext,         "Request", "JSON/HTTPS");
-            mobileApplication.Uses(authenticationContext,   "Request", "JSON/HTTPS");
-            mobileApplication.Uses(promotionsContext,       "Request", "JSON/HTTPS");
-            mobileApplication.Uses(partnerContext,   "Request", "JSON/HTTPS");
-            webApplication.Uses(tripPlanContext,            "Request", "JSON/HTTPS");
-            webApplication.Uses(authenticationContext,      "Request", "JSON/HTTPS");
-            webApplication.Uses(travelerContext,            "Request", "JSON/HTTPS");
-            webApplication.Uses(promotionsContext,          "Request", "JSON/HTTPS");
+            mobileApplication.Uses(pagoContext,         "Request", "JSON/HTTPS");
+            mobileApplication.Uses(calificacionesContext,         "Request", "JSON/HTTPS");
+            mobileApplication.Uses(chatContext,   "Request", "JSON/HTTPS");
+            mobileApplication.Uses(registroContext,       "Request", "JSON/HTTPS");
+            mobileApplication.Uses(notificacionesContext,   "Request", "JSON/HTTPS");
+            webApplication.Uses(pagoContext,            "Request", "JSON/HTTPS");
+            webApplication.Uses(chatContext,      "Request", "JSON/HTTPS");
+            webApplication.Uses(calificacionesContext,            "Request", "JSON/HTTPS");
+            webApplication.Uses(registroContext,          "Request", "JSON/HTTPS");
              
             
-            tripPlanContext.Uses(database, "", "JDBC");
-            promotionsContext.Uses(database, "", "JDBC");
-            partnerContext.Uses(database, "", "JDBC");
-            authenticationContext.Uses(database, "", "JDBC");
-            travelerContext.Uses(database, "", "JDBC");
+            pagoContext.Uses(database1, "", "JDBC");
+            registroContext.Uses(database2, "", "JDBC");
+            notificacionesContext.Uses(database3, "", "JDBC");
+            chatContext.Uses(database4, "", "JDBC");
+            calificacionesContext.Uses(database5, "", "JDBC");
                         
-            tripPlanContext.Uses(googleMaps, "API Request", "JSON/HTTPS");          
 
             // Tags
             mobileApplication.AddTags("MobileApp");
             webApplication.AddTags("WebApp");
             landingPage.AddTags("LandingPage");
-            database.AddTags("Database");
-            tripPlanContext.AddTags("BoundedContext");            
-            promotionsContext.AddTags("BoundedContext");            
-            partnerContext.AddTags("BoundedContext");            
-            travelerContext.AddTags("BoundedContext");            
-            authenticationContext.AddTags("BoundedContext");            
+            database1.AddTags("Database");
+            database2.AddTags("Database");
+            database3.AddTags("Database");
+            database4.AddTags("Database");
+            database5.AddTags("Database");
+            pagoContext.AddTags("BoundedContext");            
+            registroContext.AddTags("BoundedContext");            
+            notificacionesContext.AddTags("BoundedContext");            
+            calificacionesContext.AddTags("BoundedContext");            
+            chatContext.AddTags("BoundedContext");            
 
             styles.Add(new ElementStyle("MobileApp") { Background = "#9d33d6", Color = "#ffffff", Shape = Shape.MobileDevicePortrait, Icon = "" });
             styles.Add(new ElementStyle("WebApp") { Background = "#9d33d6", Color = "#ffffff", Shape = Shape.WebBrowser, Icon = "" });
@@ -99,42 +106,42 @@ namespace c4_model_design
             styles.Add(new ElementStyle("Database") { Shape = Shape.Cylinder, Background = "#ff0000", Color = "#ffffff", Icon = "" });
             styles.Add(new ElementStyle("BoundedContext") { Shape = Shape.Hexagon, Background = "#facc2e", Icon = "" });            
 
-            ContainerView containerView = viewSet.CreateContainerView(libraySystem, "Contenedor", "Diagrama de contenedores");
+            ContainerView containerView = viewSet.CreateContainerView(librarySystem, "Contenedor", "Diagrama de contenedores");
             contextView.PaperSize = PaperSize.A4_Landscape;
             containerView.AddAllElements(); 
             
-            // 3. Diagrama de Componentes -> Traveler
-            Component domainLayerTraveler =         travelerContext.AddComponent("Domain Layer", "", "NodeJS (NestJS)");
-            Component travelerController =          travelerContext.AddComponent("Traveler Controller", "REST Api endpoints de travelers", "NodeJS (NestJS)");
-            Component travelerApplicationService =  travelerContext.AddComponent("Traveler Application Service", "Provee metodos para los datos de traveler", "NodeJS (NestJS)");
-            Component travelerRepository =          travelerContext.AddComponent("Traveler Repository", "Informacion de traveler", "NodeJS (NestJS)");
-            Component friendsRepository =           travelerContext.AddComponent("Friends Repository", "Informacion de los friends del traveler", "NodeJS (NestJS)");
+            // // 3. Diagrama de Componentes -> Traveler
+            // Component domainLayerTraveler =         travelerContext.AddComponent("Domain Layer", "", "NodeJS (NestJS)");
+            // Component travelerController =          travelerContext.AddComponent("Traveler Controller", "REST Api endpoints de travelers", "NodeJS (NestJS)");
+            // Component travelerApplicationService =  travelerContext.AddComponent("Traveler Application Service", "Provee metodos para los datos de traveler", "NodeJS (NestJS)");
+            // Component travelerRepository =          travelerContext.AddComponent("Traveler Repository", "Informacion de traveler", "NodeJS (NestJS)");
+            // Component friendsRepository =           travelerContext.AddComponent("Friends Repository", "Informacion de los friends del traveler", "NodeJS (NestJS)");
 
-            mobileApplication.Uses(travelerController,"JSON");
-            webApplication.Uses(travelerController,"JSON");
-            travelerController.Uses(travelerApplicationService,"Usa");
-            travelerApplicationService.Uses(friendsRepository,"Usa");
-            travelerApplicationService.Uses(travelerRepository,"Usa");
-            travelerApplicationService.Uses(domainLayerTraveler,"Usa");
-            friendsRepository.Uses(database,"","JDBC");
-            travelerRepository.Uses(database,"","JDBC");
+            // mobileApplication.Uses(travelerController,"JSON");
+            // webApplication.Uses(travelerController,"JSON");
+            // travelerController.Uses(travelerApplicationService,"Usa");
+            // travelerApplicationService.Uses(friendsRepository,"Usa");
+            // travelerApplicationService.Uses(travelerRepository,"Usa");
+            // travelerApplicationService.Uses(domainLayerTraveler,"Usa");
+            // friendsRepository.Uses(database,"","JDBC");
+            // travelerRepository.Uses(database,"","JDBC");
             
-            //tags
-            domainLayerTraveler.AddTags("Component");
-            travelerRepository.AddTags("Component");
-            travelerController.AddTags("Component");
-            travelerApplicationService.AddTags("Component");
-            friendsRepository.AddTags("Component");
+            // //tags
+            // domainLayerTraveler.AddTags("Component");
+            // travelerRepository.AddTags("Component");
+            // travelerController.AddTags("Component");
+            // travelerApplicationService.AddTags("Component");
+            // friendsRepository.AddTags("Component");
 
-            //style
-            //styles.Add(new ElementStyle("Component") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            // //style
+            // //styles.Add(new ElementStyle("Component") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
 
-            ComponentView travelerComponentView = viewSet.CreateComponentView(travelerContext, "Traveler Components", "Component Diagram");
-            travelerComponentView.PaperSize = PaperSize.A4_Landscape;
-            travelerComponentView.Add(mobileApplication);   
-            travelerComponentView.Add(webApplication);
-            travelerComponentView.Add(database);
-            travelerComponentView.AddAllComponents();            
+            // ComponentView travelerComponentView = viewSet.CreateComponentView(travelerContext, "Traveler Components", "Component Diagram");
+            // travelerComponentView.PaperSize = PaperSize.A4_Landscape;
+            // travelerComponentView.Add(mobileApplication);   
+            // travelerComponentView.Add(webApplication);
+            // travelerComponentView.Add(database);
+            // travelerComponentView.AddAllComponents();            
 
             structurizrClient.UnlockWorkspace(workspaceId);
             structurizrClient.PutWorkspace(workspaceId, workspace);
