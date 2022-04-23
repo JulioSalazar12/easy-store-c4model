@@ -22,13 +22,17 @@ namespace c4_model_design
             Model model = workspace.Model;
 
             // 1. Diagrama de Contexto
-            SoftwareSystem librarySystem = model.AddSoftwareSystem("Sistema sample-content", "sample message");
+            SoftwareSystem librarySystem = model.AddSoftwareSystem("Easy Store", "Plataforma web donde puedes publicar y leer historias de otros usuarios regitrados pudiendo suscribirse a contenido exclusivo");
                         
             Person escritor = model.AddPerson("Escritor", "Usuario capaz de publicar contenido textual.");
             Person lector = model.AddPerson("Lector", "Usuario que solo podra leer contenido y suscribirse");
+            Person developer = model.AddPerson("Developer", "Developer - Open Data.");
+
             
             lector.Uses(librarySystem, "Realiza consultas para mantenerse al tanto de las publicaciones que puede leer");
             escritor.Uses(librarySystem, "Realiza consultas para mantenerse al tanto de los lectors que seleccionan su negocio");
+            developer.Uses(librarySystem, "Realiza consultas a la REST API para mantenerse al tanto de los datos de las historias");
+
             
             SystemContextView contextView = viewSet.CreateSystemContextView(librarySystem, "Contexto", "Diagrama de contexto");
             contextView.PaperSize = PaperSize.A3_Landscape;
@@ -39,27 +43,34 @@ namespace c4_model_design
             escritor.AddTags("Ciudadano");
             lector.AddTags("Ciudadano");
             librarySystem.AddTags("SistemaLibros");
+            developer.AddTags("Developer");
+
 
             Styles styles = viewSet.Configuration.Styles;
             styles.Add(new ElementStyle("Ciudadano") { Background = "#0a60ff", Color = "#ffffff", Shape = Shape.Person });
             styles.Add(new ElementStyle("SistemaLibros") { Background = "#008f39", Color = "#ffffff", Shape = Shape.RoundedBox });
+            styles.Add(new ElementStyle("Developer") { Background = "#facc2e", Shape = Shape.Robot });
+
             
 
             // 2. Diagrama de Contenedores
             Container mobileApplication =       librarySystem.AddContainer("Mobile App", "Permite a los usuarios visualizar las actividades turisticas que pueden realizar cercanas a su destino.", "Flutter");
             Container webApplication =          librarySystem.AddContainer("Web App", "Permite a los usuarios visualizar las actividades turisticas que pueden realizar cercanas a su destino.", "Vue");
             Container landingPage =             librarySystem.AddContainer("Landing Page", "", "Bootstrap");
-            Container pagoContext =             librarySystem.AddContainer("Trip Plan Context", "Bounded Context del Microservicio de Planificación de viajes y hospedajes en el destino seleccionado", "NodeJS (NestJS)");
-            Container registroContext =         librarySystem.AddContainer("registro Context", "Bounded Context del Microservicio de promociones existentes", "NodeJS (NestJS)");
-            Container notificacionesContext =   librarySystem.AddContainer("notificaciones Context", "Bounded Context del Microservicio de información de los notificacioness", "NodeJS (NestJS)");
-            Container calificacionesContext =   librarySystem.AddContainer("calificaciones Context", "Bounded Context del microservicio de información del calificaciones", "NodeJS (NestJS)");
-            Container chatContext =             librarySystem.AddContainer("chat Context", "Bounded Context del microservicio de autenticación para calificaciones y notificaciones", "NodeJS (NestJS)");
-            Container database1 =                librarySystem.AddContainer("Database1", "", "MySQL");
-            Container database2 =                librarySystem.AddContainer("Database2", "", "MySQL");
-            Container database3 =                librarySystem.AddContainer("Database3", "", "MySQL");
-            Container database4 =                librarySystem.AddContainer("Database4", "", "MySQL");
-            Container database5 =                librarySystem.AddContainer("Database5", "", "MySQL");
+            Container pagoContext =             librarySystem.AddContainer("Pagos Context", "Bounded Context del Microservicio de pagos de suscripciones", "NodeJS (NestJS)");
+            Container registroContext =         librarySystem.AddContainer("Registro Context", "Bounded Context del Microservicio de registro de segmentos objetivos", "NodeJS (NestJS)");
+            Container historiasContext =        librarySystem.AddContainer("Post Context", "Bounded Context del Microservicio de contenido de las historias", "NodeJS (NestJS)");
+            Container calificacionesContext =   librarySystem.AddContainer("Calificaciones Context", "Bounded Context del microservicio de información de las calificaciones", "NodeJS (NestJS)");
+            Container apiGateway =              librarySystem.AddContainer("API Gateway", "API Gateway", "Spring Boot port 8080");
+            Container database1 =               librarySystem.AddContainer("Database1", "", "MySQL");
+            Container database2 =               librarySystem.AddContainer("Database2", "", "MySQL");
+            Container database3 =               librarySystem.AddContainer("Database3", "", "MySQL");
+            Container database4 =               librarySystem.AddContainer("Database4", "", "MySQL");
+            Container messageBus = librarySystem.AddContainer("Bus de Mensajes en Cluster de Alta Disponibilidad", "Transporte de eventos del dominio.", "RabbitMQ");
+
             
+            
+
             lector.Uses(mobileApplication, "Consulta");
             lector.Uses(webApplication, "Consulta");
             lector.Uses(landingPage, "Consulta");
@@ -67,44 +78,48 @@ namespace c4_model_design
             escritor.Uses(webApplication, "Consulta");
             escritor.Uses(landingPage, "Consulta");                        
 
-            mobileApplication.Uses(pagoContext,         "Request", "JSON/HTTPS");
-            mobileApplication.Uses(calificacionesContext,         "Request", "JSON/HTTPS");
-            mobileApplication.Uses(chatContext,   "Request", "JSON/HTTPS");
-            mobileApplication.Uses(registroContext,       "Request", "JSON/HTTPS");
-            mobileApplication.Uses(notificacionesContext,   "Request", "JSON/HTTPS");
-            webApplication.Uses(pagoContext,            "Request", "JSON/HTTPS");
-            webApplication.Uses(chatContext,      "Request", "JSON/HTTPS");
-            webApplication.Uses(calificacionesContext,            "Request", "JSON/HTTPS");
-            webApplication.Uses(registroContext,          "Request", "JSON/HTTPS");
-             
-            
+            mobileApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
+            webApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
+
+            apiGateway.Uses(pagoContext,         "Request", "JSON/HTTPS");
+            apiGateway.Uses(calificacionesContext,         "Request", "JSON/HTTPS");
+            apiGateway.Uses(registroContext,       "Request", "JSON/HTTPS");
+            apiGateway.Uses(historiasContext,   "Request", "JSON/HTTPS");
+
             pagoContext.Uses(database1, "", "JDBC");
             registroContext.Uses(database2, "", "JDBC");
-            notificacionesContext.Uses(database3, "", "JDBC");
-            chatContext.Uses(database4, "", "JDBC");
-            calificacionesContext.Uses(database5, "", "JDBC");
+            historiasContext.Uses(database3, "", "JDBC");
+            calificacionesContext.Uses(database4, "", "JDBC");
+            
+            pagoContext.Uses(messageBus,"Publica y consume eventos del dominio");
+            registroContext.Uses(messageBus, "Publica y consume eventos del dominio");
+            historiasContext.Uses(messageBus, "Publica y consume eventos del dominio");
+            calificacionesContext.Uses(messageBus, "Publica y consume eventos del dominio");
                         
-
             // Tags
             mobileApplication.AddTags("MobileApp");
             webApplication.AddTags("WebApp");
-            landingPage.AddTags("LandingPage");
+            landingPage.AddTags("LandingPage");            
+            apiGateway.AddTags("APIGateway");
             database1.AddTags("Database");
             database2.AddTags("Database");
             database3.AddTags("Database");
             database4.AddTags("Database");
-            database5.AddTags("Database");
             pagoContext.AddTags("BoundedContext");            
             registroContext.AddTags("BoundedContext");            
-            notificacionesContext.AddTags("BoundedContext");            
-            calificacionesContext.AddTags("BoundedContext");            
-            chatContext.AddTags("BoundedContext");            
+            historiasContext.AddTags("BoundedContext");            
+            calificacionesContext.AddTags("BoundedContext");
+            messageBus.AddTags("MessageBus");
+
 
             styles.Add(new ElementStyle("MobileApp") { Background = "#9d33d6", Color = "#ffffff", Shape = Shape.MobileDevicePortrait, Icon = "" });
             styles.Add(new ElementStyle("WebApp") { Background = "#9d33d6", Color = "#ffffff", Shape = Shape.WebBrowser, Icon = "" });
-            styles.Add(new ElementStyle("LandingPage") { Background = "#929000", Color = "#ffffff", Shape = Shape.WebBrowser, Icon = "" });            
+            styles.Add(new ElementStyle("LandingPage") { Background = "#929000", Color = "#ffffff", Shape = Shape.WebBrowser, Icon = "" });
+            styles.Add(new ElementStyle("APIGateway") { Shape = Shape.RoundedBox, Background = "#0000ff", Color = "#ffffff", Icon = "" });
             styles.Add(new ElementStyle("Database") { Shape = Shape.Cylinder, Background = "#ff0000", Color = "#ffffff", Icon = "" });
-            styles.Add(new ElementStyle("BoundedContext") { Shape = Shape.Hexagon, Background = "#facc2e", Icon = "" });            
+            styles.Add(new ElementStyle("BoundedContext") { Shape = Shape.Hexagon, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("MessageBus") { Width = 850, Background = "#fd8208", Color = "#ffffff", Shape = Shape.Pipe, Icon = "" });
+
 
             ContainerView containerView = viewSet.CreateContainerView(librarySystem, "Contenedor", "Diagrama de contenedores");
             contextView.PaperSize = PaperSize.A4_Landscape;
