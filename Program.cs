@@ -131,38 +131,71 @@ namespace c4_model_design
             contextView.PaperSize = PaperSize.A4_Landscape;
             containerView.AddAllElements(); 
             
-            // // 3. Diagrama de Componentes -> Traveler
-            // Component domainLayerTraveler =         travelerContext.AddComponent("Domain Layer", "", "NodeJS (NestJS)");
-            // Component travelerController =          travelerContext.AddComponent("Traveler Controller", "REST Api endpoints de travelers", "NodeJS (NestJS)");
-            // Component travelerApplicationService =  travelerContext.AddComponent("Traveler Application Service", "Provee metodos para los datos de traveler", "NodeJS (NestJS)");
-            // Component travelerRepository =          travelerContext.AddComponent("Traveler Repository", "Informacion de traveler", "NodeJS (NestJS)");
-            // Component friendsRepository =           travelerContext.AddComponent("Friends Repository", "Informacion de los friends del traveler", "NodeJS (NestJS)");
+            //3. Diagrama de Componentes -> Traveler
+            // Component domainLayerPost =         historiasContext.AddComponent("Domain Layer", "", "NodeJS (NestJS)");
+            // Component historiasController =          historiasContext.AddComponent("historias Controller", "REST Api endpoints de historiass", "NodeJS (NestJS)");
+            // Component historiasApplicationService =  historiasContext.AddComponent("historias Application Service", "Provee metodos para los datos de historias", "NodeJS (NestJS)");
+            // Component historiasRepository =          historiasContext.AddComponent("historias Repository", "Informacion de historias", "NodeJS (NestJS)");
+            // Component friendsRepository =           historiasContext.AddComponent("Friends Repository", "Informacion de los friends del historias", "NodeJS (NestJS)");
 
-            // mobileApplication.Uses(travelerController,"JSON");
-            // webApplication.Uses(travelerController,"JSON");
-            // travelerController.Uses(travelerApplicationService,"Usa");
-            // travelerApplicationService.Uses(friendsRepository,"Usa");
-            // travelerApplicationService.Uses(travelerRepository,"Usa");
-            // travelerApplicationService.Uses(domainLayerTraveler,"Usa");
-            // friendsRepository.Uses(database,"","JDBC");
-            // travelerRepository.Uses(database,"","JDBC");
+            // mobileApplication.Uses(historiasController,"JSON");
+            // webApplication.Uses(historiasController,"JSON");
+            // historiasController.Uses(historiasApplicationService,"Usa");
+            // historiasApplicationService.Uses(friendsRepository,"Usa");
+            // historiasApplicationService.Uses(historiasRepository,"Usa");
+            // historiasApplicationService.Uses(domainLayerPost,"Usa");
+            // friendsRepository.Uses(database5,"","JDBC");
+            // historiasRepository.Uses(database5,"","JDBC");
+            // friendsRepository.Uses(database3,"","JDBC");
+            // historiasRepository.Uses(database3,"","JDBC");
+            // database3.Uses(database5, "", "JDBC");
+
             
             // //tags
-            // domainLayerTraveler.AddTags("Component");
-            // travelerRepository.AddTags("Component");
-            // travelerController.AddTags("Component");
-            // travelerApplicationService.AddTags("Component");
+            // domainLayerPost.AddTags("Component");
+            // historiasRepository.AddTags("Component");
+            // historiasController.AddTags("Component");
+            // historiasApplicationService.AddTags("Component");
             // friendsRepository.AddTags("Component");
 
             // //style
-            // //styles.Add(new ElementStyle("Component") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            // styles.Add(new ElementStyle("DomainLayer") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
 
-            // ComponentView travelerComponentView = viewSet.CreateComponentView(travelerContext, "Traveler Components", "Component Diagram");
-            // travelerComponentView.PaperSize = PaperSize.A4_Landscape;
-            // travelerComponentView.Add(mobileApplication);   
-            // travelerComponentView.Add(webApplication);
-            // travelerComponentView.Add(database);
-            // travelerComponentView.AddAllComponents();            
+            // ComponentView componentView = viewSet.CreateComponentView(historiasContext, "Components", "Component Diagram");
+            // componentView.PaperSize = PaperSize.A4_Landscape;
+            // componentView.Add(mobileApplication);
+            // componentView.Add(webApplication);
+            // componentView.Add(apiGateway);         
+
+            Component domainLayerHistoriasContext = historiasContext.AddComponent("Domain Layer", "Domino del contexto", "Spring Boot(NestJS)");
+            Component historiaController = historiasContext.AddComponent("History Controller", "REST API endpoint de historias", "Spring Boot");
+            Component historiaApplicationService = historiasContext.AddComponent("HistorysAplication Service", "Prove metodos para los datos de hisotrias", "Spring Boot");
+            Component historiaRepository=historiasContext.AddComponent("History Repository", "Información de historias", "Spring Boot");
+            Component usuarioRepository=historiasContext.AddComponent("Usuario Repository", "Información de usuarios", "Spring Boot");
+
+            mobileApplication.Uses(historiaController, "JSON");
+            webApplication.Uses(historiaController, "JSON");
+            historiaController.Uses(historiaApplicationService, "");
+            historiaApplicationService.Uses(historiaRepository, "");
+            historiaApplicationService.Uses(usuarioRepository, "");
+            historiaRepository.Uses(database1, "", "JDBC");
+            usuarioRepository.Uses(database2, "", "JDBC");
+
+            domainLayerHistoriasContext.AddTags("Component");
+            historiaController.AddTags("Component");
+            historiaApplicationService.AddTags("Component");
+            historiaRepository.AddTags("Component");
+            usuarioRepository.AddTags("Component");
+           
+            styles.Add(new ElementStyle("Component") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+         
+
+            ComponentView historyComponentView = viewSet.CreateComponentView(historiasContext, "History Components", "Component Diagram");
+            historyComponentView.PaperSize = PaperSize.A4_Landscape;
+            historyComponentView.Add(mobileApplication);   
+            historyComponentView.Add(webApplication);
+            historyComponentView.Add(database1);
+            historyComponentView.AddAllComponents();            
 
             structurizrClient.UnlockWorkspace(workspaceId);
             structurizrClient.PutWorkspace(workspaceId, workspace);
