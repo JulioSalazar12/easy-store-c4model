@@ -12,8 +12,4 @@ Equipo WebCrew 🚀🔝
 * Marco Rios De la Cruz Melo      U201414965
 * Vanessa Flores Nahuis           U201816689
 
-
-
-
-
-
+See [Workspace c4-model](https://structurizr.com/share/73645).
