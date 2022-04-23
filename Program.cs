@@ -62,10 +62,10 @@ namespace c4_model_design
             Container historiasContext =        librarySystem.AddContainer("Post Context", "Bounded Context del Microservicio de contenido de las historias", "NodeJS (NestJS)");
             Container calificacionesContext =   librarySystem.AddContainer("Calificaciones Context", "Bounded Context del microservicio de información de las calificaciones", "NodeJS (NestJS)");
             Container apiGateway =              librarySystem.AddContainer("API Gateway", "API Gateway", "Spring Boot port 8080");
-            Container database1 =               librarySystem.AddContainer("Database1", "", "MySQL");
-            Container database2 =               librarySystem.AddContainer("Database2", "", "MySQL");
-            Container database3 =               librarySystem.AddContainer("Database3", "", "MySQL");
-            Container database4 =               librarySystem.AddContainer("Database4", "", "MySQL");
+            Container database1 =               librarySystem.AddContainer("Pagos DB", "", "MySQL");
+            Container database2 =               librarySystem.AddContainer("Registro DB", "", "MySQL");
+            Container database3 =               librarySystem.AddContainer("Post DB", "", "MySQL");
+            Container database4 =               librarySystem.AddContainer("Calificaciones DB", "", "MySQL");
             Container messageBus = librarySystem.AddContainer("Bus de Mensajes en Cluster de Alta Disponibilidad", "Transporte de eventos del dominio.", "RabbitMQ");
 
             
@@ -76,7 +76,9 @@ namespace c4_model_design
             lector.Uses(landingPage, "Consulta");
             escritor.Uses(mobileApplication, "Consulta");
             escritor.Uses(webApplication, "Consulta");
-            escritor.Uses(landingPage, "Consulta");                        
+            escritor.Uses(landingPage, "Consulta");
+            developer.Uses(apiGateway, "API Request", "JSON/HTTPS");
+                     
 
             mobileApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
             webApplication.Uses(apiGateway,"API Request", "JSON/HTTPS");
