@@ -66,6 +66,7 @@ namespace c4_model_design
             Container database2 =               librarySystem.AddContainer("Registro DB", "", "MySQL");
             Container database3 =               librarySystem.AddContainer("Post DB", "", "MySQL");
             Container database4 =               librarySystem.AddContainer("Calificaciones DB", "", "MySQL");
+            Container database5 =               librarySystem.AddContainer("Post DB Replica", "", "MySQL");
             Container messageBus = librarySystem.AddContainer("Bus de Mensajes en Cluster de Alta Disponibilidad", "Transporte de eventos del dominio.", "RabbitMQ");
 
             
@@ -91,6 +92,8 @@ namespace c4_model_design
             pagoContext.Uses(database1, "", "JDBC");
             registroContext.Uses(database2, "", "JDBC");
             historiasContext.Uses(database3, "", "JDBC");
+            historiasContext.Uses(database5, "", "JDBC");
+            database3.Uses(database5, "", "JDBC");
             calificacionesContext.Uses(database4, "", "JDBC");
             
             pagoContext.Uses(messageBus,"Publica y consume eventos del dominio");
@@ -107,6 +110,7 @@ namespace c4_model_design
             database2.AddTags("Database");
             database3.AddTags("Database");
             database4.AddTags("Database");
+            database5.AddTags("Database");
             pagoContext.AddTags("BoundedContext");            
             registroContext.AddTags("BoundedContext");            
             historiasContext.AddTags("BoundedContext");            
